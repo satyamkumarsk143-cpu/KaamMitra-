@@ -22,12 +22,14 @@ jobs:
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
+        working-directory: android_jetpack_compose
 
       - name: Build APK
         run: ./gradlew assembleDebug
+        working-directory: android_jetpack_compose
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KaamMitra-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: android_jetpack_compose/app/build/outputs/apk/debug/app-debug.apk
