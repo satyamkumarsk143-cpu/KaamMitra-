@@ -17,19 +17,23 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Extract Android project
+        run: |
+          mkdir -p extracted
+          unzip -q app/KaamMitra-main.zip -d extracted
 
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-        working-directory: android_jetpack_compose
+      - name: Find project
+        run: |
+          PROJECT_DIR=$(dirname "$(find extracted -name gradlew -type f | head -1)")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+          chmod +x "$PROJECT_DIR/gradlew"
 
       - name: Build APK
         run: ./gradlew assembleDebug
-        working-directory: android_jetpack_compose
+        working-directory: ${{ env.PROJECT_DIR }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: KaamMitra-APK
-          path: android_jetpack_compose/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/*.apk
